@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Account,
   Address,
   Contract,
   nativeToScVal,
@@ -14,6 +15,8 @@ import {
   VAULT_CONTRACT_ADDRESS,
   STELLAR_RPC_URL,
   NETWORK_PASSPHRASE,
+  STELLAR_NETWORK,
+  assertContractsConfigured,
 } from "./env";
 import { getWalletKit } from "./wallet";
 
@@ -36,7 +39,8 @@ function server() {
 
 function parseLock(val: xdr.ScVal): Lock {
   const obj = scValToNative(val) as Record<string, unknown>;
-  const status = (obj.status as { tag?: string })?.tag ?? "Locked";
+  const statusRaw = obj.status;
+  const status = Array.isArray(statusRaw) ? statusRaw[0] : statusRaw;
   return {
     owner: String(obj.owner),
     recipient: String(obj.recipient),
@@ -54,17 +58,15 @@ async function simulateRead<T>(
   args: xdr.ScVal[],
   parse: (v: xdr.ScVal) => T
 ): Promise<T> {
+  assertContractsConfigured();
   const rpc = server();
   const contract = new Contract(VAULT_CONTRACT_ADDRESS);
-  const account = await rpc.getAccount(
-    "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF"
-  ).catch(() => null);
-  const source =
-    account ??
-    new (await import("@stellar/stellar-sdk")).Account(
-      "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF",
-      "0"
-    );
+  // Valid, unfunded, checksummed keypair used only as a simulation source —
+  // read-only calls don't need a real or funded account.
+  const DUMMY_ACCOUNT =
+    "GCSX3V6YFARVTIBGUW5IT5DPP4D3INET5MCZBR3F3UYTBUBK4T653UL7";
+  const account = await rpc.getAccount(DUMMY_ACCOUNT).catch(() => null);
+  const source = account ?? new Account(DUMMY_ACCOUNT, "0");
   const tx = new TransactionBuilder(source, {
     fee: BASE_FEE,
     networkPassphrase: NETWORK_PASSPHRASE,
@@ -111,6 +113,7 @@ async function submitInvoke(
   args: xdr.ScVal[],
   sourcePublicKey: string
 ): Promise<{ hash: string }> {
+  assertContractsConfigured();
   const rpc = server();
   const contract = new Contract(VAULT_CONTRACT_ADDRESS);
   const account = await rpc.getAccount(sourcePublicKey);
@@ -131,9 +134,23 @@ async function submitInvoke(
   const kit = getWalletKit();
   const { signedTxXdr } = await kit.signTransaction(tx.toXDR(), {
     networkPassphrase: NETWORK_PASSPHRASE,
+    address: sourcePublicKey,
   });
 
-  const signedTx = TransactionBuilder.fromXDR(signedTxXdr, NETWORK_PASSPHRASE);
+  if (!signedTxXdr) {
+    throw new Error("Wallet returned an empty signed transaction.");
+  }
+
+  let signedTx: ReturnType<typeof TransactionBuilder.fromXDR>;
+  try {
+    signedTx = TransactionBuilder.fromXDR(signedTxXdr, NETWORK_PASSPHRASE);
+  } catch (err) {
+    throw new Error(
+      `Wallet returned a transaction the SDK could not decode (${
+        err instanceof Error ? err.message : String(err)
+      }). Confirm your wallet is set to the ${STELLAR_NETWORK} network and try again.`
+    );
+  }
   const sendResult = await rpc.sendTransaction(signedTx);
   if (sendResult.status === "ERROR") {
     throw new Error("transaction submission failed");
