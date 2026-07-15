@@ -1,0 +1,10 @@
+target/
+.soroban/
+node_modules/
+frontend/.next/
+frontend/out/
+frontend/node_modules/
+.env.local
+.env
+*.log
+.DS_Store
