@@ -1,6 +1,6 @@
 "use client";
 
-import { SorobanRpc, scValToNative } from "@stellar/stellar-sdk";
+import { rpc as RpcApi, scValToNative, xdr } from "@stellar/stellar-sdk";
 import { STELLAR_RPC_URL, VAULT_CONTRACT_ADDRESS } from "./env";
 
 export interface VaultEvent {
@@ -13,7 +13,7 @@ export interface VaultEvent {
 }
 
 export async function fetchVaultEvents(startLedger?: number): Promise<VaultEvent[]> {
-  const rpc = new SorobanRpc.Server(STELLAR_RPC_URL);
+  const rpc = new RpcApi.Server(STELLAR_RPC_URL);
   const latest = await rpc.getLatestLedger();
   const from = startLedger ?? Math.max(1, latest.sequence - 10_000);
 
@@ -30,7 +30,7 @@ export async function fetchVaultEvents(startLedger?: number): Promise<VaultEvent
 
   const events: VaultEvent[] = [];
   for (const e of res.events) {
-    const topics = e.topic.map((t) => scValToNative(t));
+    const topics = e.topic.map((t: xdr.ScVal) => scValToNative(t));
     const kind = topics[1];
     if (kind !== "deposit" && kind !== "withdraw") continue;
     const data = scValToNative(e.value) as unknown[];

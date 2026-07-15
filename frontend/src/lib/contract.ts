@@ -6,7 +6,7 @@ import {
   Contract,
   nativeToScVal,
   scValToNative,
-  SorobanRpc,
+  rpc as RpcApi,
   TransactionBuilder,
   BASE_FEE,
   xdr,
@@ -34,7 +34,7 @@ export interface Lock {
 }
 
 function server() {
-  return new SorobanRpc.Server(STELLAR_RPC_URL);
+  return new RpcApi.Server(STELLAR_RPC_URL);
 }
 
 function parseLock(val: xdr.ScVal): Lock {
@@ -75,10 +75,10 @@ async function simulateRead<T>(
     .setTimeout(30)
     .build();
   const sim = await rpc.simulateTransaction(tx);
-  if (SorobanRpc.Api.isSimulationError(sim)) {
+  if (RpcApi.Api.isSimulationError(sim)) {
     throw new Error(sim.error);
   }
-  const retval = (sim as SorobanRpc.Api.SimulateTransactionSuccessResponse)
+  const retval = (sim as RpcApi.Api.SimulateTransactionSuccessResponse)
     .result?.retval;
   if (!retval) throw new Error("no simulation result");
   return parse(retval);
@@ -126,10 +126,10 @@ async function submitInvoke(
     .build();
 
   const sim = await rpc.simulateTransaction(tx);
-  if (SorobanRpc.Api.isSimulationError(sim)) {
+  if (RpcApi.Api.isSimulationError(sim)) {
     throw new Error(sim.error);
   }
-  tx = SorobanRpc.assembleTransaction(tx, sim).build();
+  tx = RpcApi.assembleTransaction(tx, sim).build();
 
   const kit = getWalletKit();
   const { signedTxXdr } = await kit.signTransaction(tx.toXDR(), {
