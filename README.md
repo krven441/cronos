@@ -14,9 +14,10 @@ same Stellar Testnet contract addresses recorded below.
 
 ## Demo Video (1–2 minutes)
 
-[`ss/Snapzy_Recording_2026-07-15_23-31-14.gif`](ss/Snapzy_Recording_2026-07-15_23-31-14.gif) —
-screen recording against the live deployment: connect wallet → deposit → live
+Screen recording against the live deployment: connect wallet → deposit → live
 countdown → unlock transition → withdraw.
+
+![Demo recording](ss/Snapzy_Recording_2026-07-15_23-31-14.gif)
 
 ## Contract Deployment Address
 
@@ -195,8 +196,12 @@ single row, the 3D vault renders at reduced particle count (`VaultHero.tsx`
 switches `reduced=true` under a 480px media query), and the grid layout
 collapses from three columns to one below the `lg` breakpoint.
 
-![Mobile — connected wallet with balance](ss/Snapzy_2026-07-15_23-30-53_426.png)
-![Mobile — locks list and activity timeline](ss/Snapzy_2026-07-15_23-31-02_614.png)
+<table>
+<tr>
+<td><img src="ss/Snapzy_2026-07-15_23-30-53_426.png" width="100%" alt="Mobile — connected wallet with balance" /><br/><sub>Connected wallet with balance</sub></td>
+<td><img src="ss/Snapzy_2026-07-15_23-31-02_614.png" width="100%" alt="Mobile — locks list and activity timeline" /><br/><sub>Locks list and activity timeline</sub></td>
+</tr>
+</table>
 
 ## Production-Ready Architecture
 
@@ -251,7 +256,7 @@ one unlocked lock ready for withdrawal, and the live event feed on the right.
 
 **Mobile UI (375px)** — see [Mobile Responsive Frontend](#mobile-responsive-frontend) above.
 
-**Demo recording** — see [Demo Video](#demo-video-1-2-minutes) above.
+**Demo recording** — see [Demo Video (1–2 minutes)](#demo-video-1-2-minutes) above.
 
 CI/CD green run screenshot and `cargo test` output screenshot: pending, to be
 added.
