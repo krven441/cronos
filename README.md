@@ -1,9 +1,58 @@
-# Chronos — Time-Locked Vault on Stellar Soroban
+<div align="center">
 
-Chronos is a time-locked vault dApp on Stellar Soroban. A user deposits XLM into an
-on-chain vault and chooses an unlock timestamp; the contract makes withdrawal
-provably impossible before that time and pays out via a real Vault → Token
-inter-contract call the moment it arrives.
+# ⏳ Chronos — Time-Locked Vault on Stellar Soroban
+
+[![CI](https://github.com/krven441/cronos/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/krven441/cronos/actions/workflows/ci.yml)
+[![Stellar Testnet](https://img.shields.io/badge/Stellar-Testnet-7B61FF?logo=stellar&logoColor=white)](https://stellar.org)
+[![Soroban](https://img.shields.io/badge/Soroban-SDK%20v27-FF5A00?logo=rust&logoColor=white)](https://soroban.stellar.org)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Cloudflare Workers](https://img.shields.io/badge/Deployed-Cloudflare%20Workers-F38020?logo=cloudflare&logoColor=white)](https://cronos.acid-surface-award.workers.dev/)
+
+**A vault that makes withdrawal provably impossible until a chosen unlock time — enforced on-chain, paid out via a real Vault → Token inter-contract call.**
+
+🌐 **[Live Demo →](https://cronos.acid-surface-award.workers.dev/)**
+
+</div>
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Live Demo](#live-demo)
+- [Demo Video (1–2 minutes)](#demo-video-1-2-minutes)
+- [Contract Deployment Address](#contract-deployment-address)
+- [Transaction Hash for Contract Interaction](#transaction-hash-for-contract-interaction)
+- [Inter-Contract Communication](#inter-contract-communication)
+- [Event Streaming & Real-Time Updates](#event-streaming--real-time-updates)
+- [Tech Stack](#tech-stack)
+- [Smart Contract Deployment Workflow](#smart-contract-deployment-workflow)
+- [CI/CD Pipeline](#cicd-pipeline)
+- [Tests](#tests)
+- [Error Handling & Loading States](#error-handling--loading-states)
+- [Mobile Responsive Frontend](#mobile-responsive-frontend)
+- [Production-Ready Architecture](#production-ready-architecture)
+- [Setup Instructions](#setup-instructions)
+- [Screenshots](#screenshots)
+
+---
+
+## Overview
+
+Chronos lets a user lock XLM in an on-chain vault until an unlock timestamp of
+their choosing. Before the unlock time, withdrawal is impossible — the contract
+rejects it outright. Once the countdown reaches zero, the depositor (or a
+designated recipient) can withdraw, triggering a real **Vault → Token**
+inter-contract transfer against the native XLM Stellar Asset Contract (SAC).
+
+**Key properties:**
+- 🔒 **No early-withdraw path, by design** — the guarantee that funds are untouchable until unlock IS the product
+- ⛓️ **Real inter-contract calls** — deposit custody and withdrawal payout are Soroban-to-Soroban `token::Client` invocations, not internal bookkeeping
+- 📡 **Live event streaming** — contract events drive a real-time activity timeline, countdown, and progress ring
+- 🎨 **Custom 3D vault hero** — React Three Fiber scene with mechanical flip-digit countdown and smooth progress ring
+
+---
 
 ## Live Demo
 
@@ -27,7 +76,7 @@ Deployed to **Stellar Testnet**:
 CAZSJKXIA3MDEZ5FAI7MEAIWT27BZOSRUVAXOFAT2K2IH5NB2X7V6BDL
 ```
 
-[View on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CAZSJKXIA3MDEZ5FAI7MEAIWT27BZOSRUVAXOFAT2K2IH5NB2X7V6BDL)
+[View on Stellar Expert ↗](https://stellar.expert/explorer/testnet/contract/CAZSJKXIA3MDEZ5FAI7MEAIWT27BZOSRUVAXOFAT2K2IH5NB2X7V6BDL)
 
 Native XLM SAC address used as the vault's token (testnet):
 
@@ -39,13 +88,13 @@ CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC
 
 | # | Action | Tx Hash | Explorer |
 |---|--------|---------|----------|
-| 1 | `deposit` — 100 XLM, unlock in 120s, lock id 0 | `37d4b7f8502f049d34b0e9a1319076914f72a6532652c1af9e920a73df992d0d` | [View](https://stellar.expert/explorer/testnet/tx/37d4b7f8502f049d34b0e9a1319076914f72a6532652c1af9e920a73df992d0d) |
-| 2 | `withdraw` — lock id 0, after unlock | `afc33fa54c26d88b09bdf6ecd8d54e6697f2c74215f4389c011d19d97835a255` | [View](https://stellar.expert/explorer/testnet/tx/afc33fa54c26d88b09bdf6ecd8d54e6697f2c74215f4389c011d19d97835a255) |
-| 3 | `deposit` — 50 XLM, unlock in 7 days (long lock, active), lock id 1 | `1194f92bf1e8fc69f0e646d89f9e8106d9bdb719a47e15d92e7109eeaa94bb8f` | [View](https://stellar.expert/explorer/testnet/tx/1194f92bf1e8fc69f0e646d89f9e8106d9bdb719a47e15d92e7109eeaa94bb8f) |
+| 1 | `deposit` — 100 XLM, unlock in 120s, lock id 0 | `37d4b7f8502f049d34b0e9a1319076914f72a6532652c1af9e920a73df992d0d` | [View ↗](https://stellar.expert/explorer/testnet/tx/37d4b7f8502f049d34b0e9a1319076914f72a6532652c1af9e920a73df992d0d) |
+| 2 | `withdraw` — lock id 0, after unlock | `afc33fa54c26d88b09bdf6ecd8d54e6697f2c74215f4389c011d19d97835a255` | [View ↗](https://stellar.expert/explorer/testnet/tx/afc33fa54c26d88b09bdf6ecd8d54e6697f2c74215f4389c011d19d97835a255) |
+| 3 | `deposit` — 50 XLM, unlock in 7 days (long lock, active), lock id 1 | `1194f92bf1e8fc69f0e646d89f9e8106d9bdb719a47e15d92e7109eeaa94bb8f` | [View ↗](https://stellar.expert/explorer/testnet/tx/1194f92bf1e8fc69f0e646d89f9e8106d9bdb719a47e15d92e7109eeaa94bb8f) |
 
-All three hashes were verified to resolve on Stellar Expert (HTTP 200) before
-being recorded here. Lock id 1 remains locked and is the live active countdown
-referenced in the Definition of Done.
+> All three hashes were verified to resolve on Stellar Expert (HTTP 200) before
+> being recorded here. Lock id 1 remains locked and is the live active
+> countdown referenced in the Definition of Done.
 
 ## Inter-Contract Communication
 
@@ -85,6 +134,23 @@ The countdown itself ticks every second purely client-side from `unlock_at` — 
 polling needed for the clock — and the progress ring interpolates continuously
 via a Framer Motion spring rather than stepping once per poll.
 
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Smart contracts | Rust + Soroban SDK 27, `wasm32v1-none` target |
+| Frontend framework | Next.js 14 (App Router), static export |
+| Language | TypeScript |
+| Styling | Tailwind CSS |
+| Wallet integration | `@creit.tech/stellar-wallets-kit` |
+| Stellar SDK | `@stellar/stellar-sdk` v16 |
+| Motion | Framer Motion |
+| 3D | React Three Fiber + drei |
+| Data polling | SWR |
+| Icons | lucide-react |
+| Deployment | Cloudflare Workers (static assets) |
+| CI/CD | GitHub Actions |
+
 ## Smart Contract Deployment Workflow
 
 Exact commands used for the deployment and transactions recorded above:
@@ -123,9 +189,9 @@ stellar contract invoke --id vault --source deployer --network testnet -- deposi
 ```
 
 Frontend env vars (`frontend/.env.example`, also required in the Cloudflare
-dashboard before deploying):
+dashboard as build-time variables):
 
-```
+```env
 NEXT_PUBLIC_VAULT_CONTRACT_ADDRESS=CAZSJKXIA3MDEZ5FAI7MEAIWT27BZOSRUVAXOFAT2K2IH5NB2X7V6BDL
 NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS=CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC
 NEXT_PUBLIC_STELLAR_NETWORK=testnet
@@ -142,6 +208,8 @@ NEXT_PUBLIC_STELLAR_RPC_URL=https://soroban-testnet.stellar.org:443
 - `frontend`: Node 20, `npm ci`, `npm run lint`, `npm run build` in `frontend/`.
 
 Live at [github.com/krven441/cronos/actions](https://github.com/krven441/cronos/actions).
+
+![CI/CD all checks passing](ss/Snapzy_2026-07-15_23-47-15_863.png)
 
 ## Tests
 
@@ -161,6 +229,8 @@ test test::test_withdraw_after_unlock_pays_exact_amount ... ok
 
 test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
 ```
+
+![Test output from CI run](ss/Snapzy_2026-07-15_23-41-36_471.png)
 
 Coverage: locking funds, rejecting early withdrawal, exact-amount payout via a
 real SAC balance delta, rejecting a non-recipient withdrawer, rejecting a double
@@ -217,7 +287,7 @@ collapses from three columns to one below the `lg` breakpoint.
   480px rather than hiding the vault entirely.
 - **Storage**: persistent Soroban storage with explicit TTL bumps
   (`contracts/vault/src/storage.rs`) on both the per-lock entry and the
-  per-owner index, so vault state and can survive the archival window without
+  per-owner index, so vault state can survive the archival window without
   manual intervention.
 
 ## Setup Instructions
@@ -256,7 +326,8 @@ one unlocked lock ready for withdrawal, and the live event feed on the right.
 
 **Mobile UI (375px)** — see [Mobile Responsive Frontend](#mobile-responsive-frontend) above.
 
-**Demo recording** — see [Demo Video (1–2 minutes)](#demo-video-1-2-minutes) above.
+**CI/CD green run** — see [CI/CD Pipeline](#cicd-pipeline) above.
 
-CI/CD green run screenshot and `cargo test` output screenshot: pending, to be
-added.
+**Test output** — see [Tests](#tests) above.
+
+**Demo recording** — see [Demo Video (1–2 minutes)](#demo-video-1-2-minutes) above.
