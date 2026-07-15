@@ -8,6 +8,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Cloudflare Workers](https://img.shields.io/badge/Deployed-Cloudflare%20Workers-F38020?logo=cloudflare&logoColor=white)](https://cronos.acid-surface-award.workers.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22C55E.svg)](LICENSE)
 
 **A vault that makes withdrawal provably impossible until a chosen unlock time — enforced on-chain, paid out via a real Vault → Token inter-contract call.**
 
@@ -35,6 +36,7 @@
 - [Production-Ready Architecture](#production-ready-architecture)
 - [Setup Instructions](#setup-instructions)
 - [Screenshots](#screenshots)
+- [License](#license)
 
 ---
 
@@ -147,6 +149,7 @@ via a Framer Motion spring rather than stepping once per poll.
 | Motion | Framer Motion |
 | 3D | React Three Fiber + drei |
 | Data polling | SWR |
+| Frontend testing | Vitest |
 | Icons | lucide-react |
 | Deployment | Cloudflare Workers (static assets) |
 | CI/CD | GitHub Actions |
@@ -236,6 +239,12 @@ Coverage: locking funds, rejecting early withdrawal, exact-amount payout via a
 real SAC balance delta, rejecting a non-recipient withdrawer, rejecting a double
 withdrawal, rejecting invalid deposits (zero amount, past unlock time), and
 `time_remaining` returning correct values before/after unlock.
+
+**Frontend**: `npm test` (Vitest) — 18 tests across
+`frontend/src/lib/__tests__/`, covering the countdown time-breakdown math
+(`time.ts`), stroop/XLM unit conversion (`balance.ts`), and the wallet
+error-classification logic that drives the "wallet not found" and "rejected
+signature" error states (`wallet.ts`). Runs in CI alongside lint and build.
 
 ## Error Handling & Loading States
 
@@ -331,3 +340,7 @@ one unlocked lock ready for withdrawal, and the live event feed on the right.
 **Test output** — see [Tests](#tests) above.
 
 **Demo recording** — see [Demo Video (1–2 minutes)](#demo-video-1-2-minutes) above.
+
+## License
+
+[MIT](LICENSE)

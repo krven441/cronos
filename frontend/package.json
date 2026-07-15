@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run"
   },
   "dependencies": {
     "next": "14.2.35",
@@ -31,6 +32,7 @@
     "postcss": "^8.4.41",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
-    "eslint-config-next": "14.2.35"
+    "eslint-config-next": "14.2.35",
+    "vitest": "^2.1.9"
   }
 }

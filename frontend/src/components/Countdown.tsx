@@ -2,20 +2,7 @@
 
 import { useEffect, useState } from "react";
 import FlipDigit from "./FlipDigit";
-
-function pad(n: number, len = 2) {
-  return String(Math.max(0, n)).padStart(len, "0");
-}
-
-function breakdown(seconds: number) {
-  const s = Math.max(0, Math.floor(seconds));
-  return {
-    days: Math.floor(s / 86400),
-    hours: Math.floor((s % 86400) / 3600),
-    minutes: Math.floor((s % 3600) / 60),
-    seconds: s % 60,
-  };
-}
+import { pad, breakdown } from "@/lib/time";
 
 function Unit({ label, value, digits }: { label: string; value: number; digits: number }) {
   const str = pad(value, digits);
