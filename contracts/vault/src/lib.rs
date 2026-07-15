@@ -58,6 +58,34 @@ impl Vault {
 
         id
     }
+
+    pub fn withdraw(env: Env, id: u64) {
+        let mut lock = storage::get_lock(&env, id);
+        lock.recipient.require_auth();
+
+        if lock.status != LockStatus::Locked {
+            panic!("already withdrawn");
+        }
+        let now = env.ledger().timestamp();
+        if now < lock.unlock_at {
+            panic!("still locked");
+        }
+
+        let token_client = token::Client::new(&env, &lock.token);
+        token_client.transfer(
+            &env.current_contract_address(),
+            &lock.recipient,
+            &lock.amount,
+        );
+
+        lock.status = LockStatus::Withdrawn;
+        storage::set_lock(&env, id, &lock);
+
+        env.events().publish(
+            (soroban_sdk::symbol_short!("vault"), soroban_sdk::symbol_short!("withdraw")),
+            (id, lock.recipient, lock.amount),
+        );
+    }
 }
 
 #[cfg(test)]
