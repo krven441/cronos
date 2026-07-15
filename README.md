@@ -21,7 +21,7 @@
 ## Table of Contents
 
 - [Live Demo](#live-demo)
-- [Demo Video (1–2 minutes)](#demo-video-1-2-minutes)
+- [Demo Video (1–2 minutes)](#demo-video-12-minutes)
 - [Project Description](#project-description)
 - [Architecture](#architecture)
 - [Tech Stack](#tech-stack)
@@ -392,7 +392,7 @@ one unlocked lock ready for withdrawal, and the live event feed on the right.
 
 **Test output** — see [Testing](#testing) above.
 
-**Demo recording** — see [Demo Video (1–2 minutes)](#demo-video-1-2-minutes) above.
+**Demo recording** — see [Demo Video (1–2 minutes)](#demo-video-12-minutes) above.
 
 ---
 
