@@ -31,10 +31,6 @@ pub fn get_lock(env: &Env, id: u64) -> Lock {
         .expect("lock not found")
 }
 
-pub fn has_lock(env: &Env, id: u64) -> bool {
-    env.storage().persistent().has(&DataKey::Lock(id))
-}
-
 pub fn add_owner_lock(env: &Env, owner: &Address, id: u64) {
     let key = DataKey::OwnerLocks(owner.clone());
     let mut ids: Vec<u64> = env

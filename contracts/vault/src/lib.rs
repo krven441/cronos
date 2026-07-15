@@ -1,6 +1,7 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, token, Address, Env, String};
+use soroban_sdk::{contract, contractimpl, token, Address, Env, String, Vec};
 
+mod events;
 mod storage;
 mod types;
 
@@ -51,10 +52,7 @@ impl Vault {
         storage::set_next_id(&env, id + 1);
         storage::add_owner_lock(&env, &owner, id);
 
-        env.events().publish(
-            (soroban_sdk::symbol_short!("vault"), soroban_sdk::symbol_short!("deposit")),
-            (id, owner, recipient, amount, unlock_at),
-        );
+        events::deposit(&env, id, owner, recipient, amount, unlock_at);
 
         id
     }
@@ -81,10 +79,32 @@ impl Vault {
         lock.status = LockStatus::Withdrawn;
         storage::set_lock(&env, id, &lock);
 
-        env.events().publish(
-            (soroban_sdk::symbol_short!("vault"), soroban_sdk::symbol_short!("withdraw")),
-            (id, lock.recipient, lock.amount),
-        );
+        events::withdraw(&env, id, lock.recipient, lock.amount);
+    }
+
+    pub fn get_lock(env: Env, id: u64) -> Lock {
+        storage::get_lock(&env, id)
+    }
+
+    pub fn get_locks_for(env: Env, who: Address) -> Vec<u64> {
+        storage::get_owner_locks(&env, &who)
+    }
+
+    pub fn time_remaining(env: Env, id: u64) -> u64 {
+        let lock = storage::get_lock(&env, id);
+        if lock.status != LockStatus::Locked {
+            return 0;
+        }
+        let now = env.ledger().timestamp();
+        if now >= lock.unlock_at {
+            0
+        } else {
+            lock.unlock_at - now
+        }
+    }
+
+    pub fn get_lock_count(env: Env) -> u64 {
+        storage::get_next_id(&env)
     }
 }
 
