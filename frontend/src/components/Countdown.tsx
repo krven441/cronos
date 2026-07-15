@@ -20,13 +20,13 @@ function breakdown(seconds: number) {
 function Unit({ label, value, digits }: { label: string; value: number; digits: number }) {
   const str = pad(value, digits);
   return (
-    <div className="flex flex-col items-center gap-1">
-      <div className="flex text-3xl font-semibold text-silver sm:text-5xl">
+    <div className="flex min-w-0 flex-col items-center gap-1">
+      <div className="flex text-xl font-semibold text-silver sm:text-2xl">
         {str.split("").map((ch, i) => (
           <FlipDigit key={i} value={ch} />
         ))}
       </div>
-      <span className="text-[10px] uppercase tracking-[0.2em] text-silver/50 sm:text-xs">
+      <span className="whitespace-nowrap text-[9px] uppercase tracking-[0.15em] text-silver/50 sm:text-[10px]">
         {label}
       </span>
     </div>
@@ -46,14 +46,14 @@ export default function Countdown({ unlockAt }: { unlockAt: number }) {
 
   if (remainingSeconds <= 0) {
     return (
-      <div className="text-center text-2xl font-medium text-success">
+      <div className="text-center text-xl font-medium text-success">
         Ready to withdraw
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center gap-4 sm:gap-8">
+    <div className="flex w-full items-center justify-center gap-2 sm:gap-3">
       <Unit label="Days" value={days} digits={2} />
       <Unit label="Hours" value={hours} digits={2} />
       <Unit label="Minutes" value={minutes} digits={2} />
