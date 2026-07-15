@@ -2,7 +2,7 @@ name = "chronos"
 compatibility_date = "2026-06-25"
 
 [build]
-command = "npx --yes npm@10.9.2 ci && npm run build"
+command = "npx --yes npm@10.9.2 install && npm run build"
 cwd = "frontend"
 
 [assets]
