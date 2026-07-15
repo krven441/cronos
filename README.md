@@ -7,25 +7,16 @@ inter-contract call the moment it arrives.
 
 ## Live Demo
 
-PENDING — generate after deployment. The contract itself is deployed and live on
-testnet (see below); the static frontend has not yet been deployed to Cloudflare
-Workers. To finish this step, run:
+**https://cronos.acid-surface-award.workers.dev/**
 
-```bash
-npx wrangler login
-npx wrangler deploy
-```
-
-from the repo root, after setting the environment variables listed in
-[Smart Contract Deployment Workflow](#smart-contract-deployment-workflow) in the
-Cloudflare dashboard.
+Deployed to Cloudflare Workers (static assets) from this repo, connected to the
+same Stellar Testnet contract addresses recorded below.
 
 ## Demo Video (1–2 minutes)
 
-PENDING — generate after deployment. Recording requires a live deployed URL and
-screen-capture tooling not available in this environment. Once the live demo is
-up, record: connect wallet → deposit → live countdown → unlock transition →
-withdraw.
+[`ss/Snapzy_Recording_2026-07-15_23-31-14.gif`](ss/Snapzy_Recording_2026-07-15_23-31-14.gif) —
+screen recording against the live deployment: connect wallet → deposit → live
+countdown → unlock transition → withdraw.
 
 ## Contract Deployment Address
 
@@ -145,20 +136,11 @@ NEXT_PUBLIC_STELLAR_RPC_URL=https://soroban-testnet.stellar.org:443
 `.github/workflows/ci.yml` runs two jobs on every push/PR to `main`:
 
 - `contracts`: installs the Rust `wasm32v1-none` target, runs `cargo test
-  --workspace`, then `stellar contract build`.
+  --workspace`, then `cargo build --release --target wasm32v1-none -p vault`
+  to produce the deployable wasm.
 - `frontend`: Node 20, `npm ci`, `npm run lint`, `npm run build` in `frontend/`.
 
-Both jobs were verified locally before being committed (`cargo test`: 8 passed;
-`next lint`: no warnings/errors; `next build`: compiled and statically exported
-successfully — see below). This repository has not yet been pushed to a GitHub
-remote, so a real Actions run and its screenshot are:
-
-**PENDING — generate after deployment.** To produce it:
-
-```bash
-gh repo create chronos --private --source=. --push
-# then check the Actions tab on GitHub for the green run
-```
+Live at [github.com/krven441/cronos/actions](https://github.com/krven441/cronos/actions).
 
 ## Tests
 
@@ -208,19 +190,13 @@ state (`EmptyVault.tsx`) when a connected wallet has zero locks.
 
 ## Mobile Responsive Frontend
 
-Verified in a live browser session at 375×812 (mobile) with no horizontal
-scroll (`document.documentElement.scrollWidth === window.innerWidth === 375`):
-header wraps to a single row, the 3D vault renders at reduced particle count
-(`VaultHero.tsx` switches `reduced=true` under a 480px media query), and the
-grid layout collapses from three columns to one below the `lg` breakpoint. A
-saved screenshot file is:
+Verified at 375×812 (mobile) with no horizontal scroll: header wraps to a
+single row, the 3D vault renders at reduced particle count (`VaultHero.tsx`
+switches `reduced=true` under a 480px media query), and the grid layout
+collapses from three columns to one below the `lg` breakpoint.
 
-**PENDING — generate after deployment.** To capture it yourself:
-
-```bash
-cd frontend && npm run dev
-# open http://localhost:3000 in a 375×812 viewport and screenshot
-```
+![Mobile — connected wallet with balance](ss/Snapzy_2026-07-15_23-30-53_426.png)
+![Mobile — locks list and activity timeline](ss/Snapzy_2026-07-15_23-31-02_614.png)
 
 ## Production-Ready Architecture
 
@@ -260,26 +236,22 @@ npm run dev
 
 ## Screenshots
 
-The following require a live browser session against a running dev server or
-deployed site and are:
+All captured against the live deployment at
+https://cronos.acid-surface-award.workers.dev/.
 
-**PENDING — generate after deployment.**
+**Wallet options modal** — Freighter, Albedo, xBull, HOT Wallet available;
+Rabet, LOBSTR, Hana, and Klever shown as not installed.
 
-- Wallet options modal (multiple wallets listed) — verified live during
-  development; not yet saved to a file in this environment.
-- Connected state with balance
-- Deposit flow
-- Vault hero with live countdown
-- Unlock/withdraw success
-- Activity timeline
-- Mobile UI at 375px
-- CI/CD green run
-- Test output (text form captured above under [Tests](#tests))
+![Wallet connect modal](ss/Snapzy_2026-07-15_23-29-35_661.png)
 
-To generate all of the above:
+**Connected state, locks list, and activity timeline** — one withdrawn lock,
+one unlocked lock ready for withdrawal, and the live event feed on the right.
 
-```bash
-cd frontend && npm run dev
-# visit http://localhost:3000, connect a testnet wallet funded via
-# https://friendbot.stellar.org, and screenshot each flow
-```
+![Connected dashboard with locks and activity](ss/Snapzy_2026-07-15_23-30-26_507.png)
+
+**Mobile UI (375px)** — see [Mobile Responsive Frontend](#mobile-responsive-frontend) above.
+
+**Demo recording** — see [Demo Video](#demo-video-1-2-minutes) above.
+
+CI/CD green run screenshot and `cargo test` output screenshot: pending, to be
+added.

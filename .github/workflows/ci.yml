@@ -17,10 +17,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: cargo test
         run: cargo test --workspace
-      - name: install stellar CLI
-        run: cargo install --locked stellar-cli --version ^26
-      - name: stellar contract build
-        run: stellar contract build
+      - name: build wasm contract
+        run: cargo build --release --target wasm32v1-none -p vault
 
   frontend:
     runs-on: ubuntu-latest
